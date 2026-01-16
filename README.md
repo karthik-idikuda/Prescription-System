@@ -1,68 +1,45 @@
-# 💊 Shop - Doctor & Pharmacy Prescription System
+# Shop Doctor - Prescription System
 
-A comprehensive prescription management system with separate apps for doctors and pharmacies, integrated with Firebase.
+## Overview
+Shop Doctor is a digital pharmacy and prescription management system designed to bridge the gap between doctors, pharmacists, and patients. It facilitates digital prescription issuance, inventory management for pharmacies, and easy medication ordering for patients.
 
----
+## Features
+-   **Digital Prescriptions**: Doctors can generate secure, legally compliant e-prescriptions.
+-   **Inventory Tracking**: Real-time stock management for pharmacy owners.
+-   **Order Processing**: Patients can upload prescriptions and order medicines.
+-   **History Log**: Secure records of past medications and treatments.
+-   **Notifications**: SMS/Email alerts for order status and refill reminders.
 
-## 🌟 Overview
+## Technology Stack
+-   **Frontend**: React / Vue.js.
+-   **Backend**: Django / Express.
+-   **Database**: PostgreSQL.
+-   **Security**: HIPAA-compliant data handling.
 
-Shop is a dual-application prescription system enabling doctors to create prescriptions and pharmacies to receive and process them in real-time.
+## Usage Flow
+1.  **Prescribe**: Doctor creates a digital prescription for a patient.
+2.  **Receive**: Patient receives the prescription link/code.
+3.  **Order**: Patient forwards the prescription to a participating pharmacy.
+4.  **Fulfill**: Pharmacist validates the Rx and dispenses the medication.
 
-## ✨ Features
-
-- **Doctor App** - Create & send prescriptions
-- **Pharmacy App** - Receive & process prescriptions
-- **Firebase Backend** - Real-time sync
-- **Secure** - HIPAA-compliant design
-
-## 📁 Project Structure
-
-```
-shop/
-├── doctor_prescription_app/    # Doctor application
-├── pharmacy_prescription_app/  # Pharmacy application
-├── FIREBASE_SETUP.md          # Setup guide
-└── google-services.json       # Firebase config
-```
-
-## 🚀 Quick Start
-
-### Doctor App
+## Quick Start
 ```bash
-cd doctor_prescription_app
-flutter pub get
-flutter run
+# Clone the repository
+git clone https://github.com/Nytrynox/Prescription-System.git
+
+# Setup backend
+cd backend
+pip install -r requirements.txt
+python manage.py runserver
+
+# Setup frontend
+cd frontend
+npm install
+npm start
 ```
 
-### Pharmacy App
-```bash
-cd pharmacy_prescription_app
-flutter pub get
-flutter run
-```
-
-## 🔬 Technology Stack
-
-| Component | Technology |
-|-----------|------------|
-| Framework | Flutter, Dart |
-| Backend | Firebase |
-| Database | Firestore |
-| Auth | Firebase Auth |
-
-## ⚙️ Configuration
-
-See `FIREBASE_SETUP.md` for Firebase configuration.
-
-## 📝 License
-
+## License
 MIT License
 
-## 👤 Author
-
-**Karthik Idikuda**  
-Mobile Developer | Healthcare Tech
-
----
-
-*Digital healthcare solutions*
+## Author
+**Karthik Idikuda**
