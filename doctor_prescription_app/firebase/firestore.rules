@@ -1,0 +1,111 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============ USERS ============
+    match /users/{userId} {
+      // Users can only read/write their own document
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ============ PATIENTS ============
+    match /patients/{patientId} {
+      // Doctors can create patients (with clinic isolation)
+      allow create: if isDoctor() && validatePatientData();
+      
+      // Doctors and Pharmacists can read patients from their clinic
+      allow read: if (isDoctor() || isPharmacist()) && belongsToUserClinic();
+      
+      // Only the creating doctor can update
+      allow update: if isDoctor() && belongsToUserClinic();
+      
+      // No delete (soft delete via status field instead)
+      allow delete: if false;
+    }
+
+    // ============ PRESCRIPTIONS ============
+    match /prescriptions/{prescriptionId} {
+      allow create: if isDoctor() && validatePrescriptionData();
+      allow read: if (isDoctor() || isPharmacist()) && belongsToUserClinic();
+      allow update: if isPharmacist() && belongsToUserClinic();
+      allow delete: if false;
+      
+      // Nested medicines collection
+      match /medicines/{medId} {
+        allow read: if (isDoctor() || isPharmacist()) && belongsToUserClinicParent();
+        allow write: if isDoctor() && belongsToUserClinicParent();
+      }
+    }
+
+    // ============ ALERTS ============
+    match /alerts/{alertId} {
+      allow create: if isDoctor();
+      allow read: if isPharmacist();
+      allow update: if isPharmacist();
+    }
+
+    // ============ MEDICINES (Master List) ============
+    match /medicines/{medicineId} {
+      allow read: if request.auth != null;
+      allow write: if isDoctor();
+    }
+
+    // ============ CLINICS ============
+    match /clinics/{clinicId} {
+      allow read: if request.auth != null;
+      allow create: if isDoctor();
+      allow update: if isDoctor() && isClinicOwner(clinicId);
+    }
+
+    // ============ HELPER FUNCTIONS ============
+    
+    function isDoctor() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "doctor";
+    }
+
+    function isPharmacist() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "pharmacist";
+    }
+
+    function getUserClinicId() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.clinicId;
+    }
+
+    function belongsToUserClinic() {
+      // Check if resource's clinicId matches user's clinicId
+      let userClinicId = getUserClinicId();
+      return userClinicId == null || resource.data.clinicId == userClinicId;
+    }
+
+    function belongsToUserClinicParent() {
+      // For nested documents, check parent's clinicId
+      let userClinicId = getUserClinicId();
+      let parentData = get(/databases/$(database)/documents/prescriptions/$(prescriptionId)).data;
+      return userClinicId == null || parentData.clinicId == userClinicId;
+    }
+
+    function isClinicOwner(clinicId) {
+      return get(/databases/$(database)/documents/clinics/$(clinicId)).data.doctorId == request.auth.uid;
+    }
+
+    function validatePatientData() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['name', 'phone']) &&
+        data.name is string &&
+        data.name.size() > 0 &&
+        data.phone is string;
+    }
+
+    function validatePrescriptionData() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['patientId', 'medicines']) &&
+        data.patientId is string &&
+        data.medicines is list;
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "741512348656",
+    "project_id": "shop-ecosystem-7a30a",
+    "storage_bucket": "shop-ecosystem-7a30a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:741512348656:android:06bf64187d8f17971ed335",
+        "android_client_info": {
+          "package_name": "com.clinic.doctor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAz6vLEQueI--WFTePRkBisLo8JZ2wPpoU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

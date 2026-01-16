@@ -1,0 +1,32 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper: Check if user is authenticated
+    function isAuth() {
+      return request.auth != null;
+    }
+    
+    // ==================== PATIENT PHOTOS ====================
+    // Path: /patients/{patientId}/photo.jpg
+    match /patients/{patientId}/{allPaths=**} {
+      // Anyone authenticated can read photos
+      allow read: if isAuth();
+      // Only authenticated users can upload (doctor)
+      allow write: if isAuth() 
+        && request.resource.size < 5 * 1024 * 1024 // Max 5MB
+        && request.resource.contentType.matches('image/.*');
+    }
+    
+    // ==================== PRESCRIPTION QR CODES ====================
+    // Path: /prescriptions/{prescriptionId}/qr.png
+    match /prescriptions/{prescriptionId}/{allPaths=**} {
+      // Anyone authenticated can read QR codes
+      allow read: if isAuth();
+      // Only authenticated users can upload
+      allow write: if isAuth()
+        && request.resource.size < 1 * 1024 * 1024 // Max 1MB
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}
